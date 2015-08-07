@@ -99,12 +99,14 @@ public class Camera {
      * Renders the passed Object3Ds on the passed Graphics object.</p>
      *
      * @param g       The Graphics object to draw on.
-     * @param objects The Objects to render.
+     * @param objects The Object3Ds to render.
+     * @param lights  The Light objects to use.
      */
-    public void render(final Graphics g, Object3D[] objects) {
+    public void render(final Graphics g, Object3D[] objects, Light[] lights) {
         objects = ZOrderer.orderObject3D(objects, true);
+        lights = ZOrderer.orderLight(lights, true);
         for (Object3D object : objects) {
-            drawTriangles(g, cameraSpace(object));
+            drawTriangles(g, cameraSpace(object), lights);
         }
     }
 
@@ -161,7 +163,8 @@ public class Camera {
      * @param g         The Graphics to draw to.
      * @param triangles The Triangles to draw.
      */
-    private void drawTriangles(final Graphics g, final Triangle[] triangles) {
+    private void drawTriangles(final Graphics g, final Triangle[] triangles,
+                               final Light[] lights) {
         for (final Triangle triangle : triangles) {
             final int[] xPoints = new int[Triangle.NumPoints];
             final int[] yPoints = new int[Triangle.NumPoints];
@@ -175,9 +178,6 @@ public class Camera {
                 yPoints[i] = point.getY() + centerY;
                 i++;
             }
-            //Color[] col = new Color[]{/*Color.BLACK, Color.CYAN, Color.GRAY,
-            //    Color.MAGENTA, Color.ORANGE, Color.PINK,*/ Color.GREEN};
-            //g.setColor(col[(int) (Math.random() * col.length)]);
             if (colouring) {
                 g.setColor(triangle.colour);
                 g.fillPolygon(xPoints, yPoints, Triangle.NumPoints);

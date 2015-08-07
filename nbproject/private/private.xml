@@ -3,12 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Point3D.java</file>
+            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Camera.java</file>
             <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/FPoint3D.java</file>
             <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Object3D.java</file>
-            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/SoftEngine3D.java</file>
+            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Point3D.java</file>
             <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Triangle.java</file>
-            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Camera.java</file>
+            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/ZOrderer.java</file>
+            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Light.java</file>
+            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/Orderable.java</file>
+            <file>file:/C:/Users/danie_000/Documents/GitHub/SoftEngine3D/src/softEngine3D/SoftEngine3D.java</file>
         </group>
     </open-files>
 </project-private>

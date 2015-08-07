@@ -212,7 +212,8 @@ public class SoftEngine3D {
                     cube.rotateZAxis(rot);
                 }
                 rot += 0.06;
-                cam.render(graph, (Object3D[]) cubes);
+                cam.render(graph, (Object3D[]) cubes,
+                        new Light[]{new Light(new Point3D(100, 100, 100))});
                 g.drawImage(img, 0, 0, this);
             }
 
