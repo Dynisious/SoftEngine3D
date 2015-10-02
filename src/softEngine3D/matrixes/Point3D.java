@@ -8,7 +8,7 @@ package softEngine3D.matrixes;
  * @author Dynisious 27/09/2015
  * @versions 0.0.1
  */
-public class Point3D {
+public class Point3D implements Comparable<Point3D> {
     /**
      * <p>
      * The x coordinate of this Point3D.</p>
@@ -107,6 +107,28 @@ public class Point3D {
      */
     public Point3D subtraction(final int x, final int y, final int z) {
         return new Point3D(this.x - x, this.y - y, this.z - z);
+    }
+
+    /**
+     * <p>
+     * Returns the result of a multiplication operation on all of the
+     * coordinates by the passed scalar.</p>
+     *
+     * @param d The scalar to multiply by.
+     *
+     * @return The result of the multiplication operation equal to
+     *         <code>this * d</code>.
+     */
+    public Point3D multiplication(final double d) {
+        return new Point3D((int)(x * d), (int)(y * d), (int) (z * d));
+    }
+
+    @Override
+    public int compareTo(final Point3D o) {
+        if (z > o.z) {
+            return -1;
+        }
+        return 0;
     }
 
 }
