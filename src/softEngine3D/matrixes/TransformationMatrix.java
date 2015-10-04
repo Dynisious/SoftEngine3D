@@ -8,7 +8,7 @@ import java.util.Arrays;
  * operations.</p>
  *
  * @author Dynisious 27/09/2015
- * @versions 0.0.1
+ * @version 0.0.2
  */
 public class TransformationMatrix {
     private final static int squareSize = 4;

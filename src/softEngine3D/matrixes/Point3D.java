@@ -6,7 +6,7 @@ package softEngine3D.matrixes;
  * points. Also facilitates addition and subtraction operations.</p>
  *
  * @author Dynisious 27/09/2015
- * @versions 0.0.1
+ * @version 0.0.2
  */
 public class Point3D implements Comparable<Point3D> {
     /**
@@ -120,7 +120,7 @@ public class Point3D implements Comparable<Point3D> {
      *         <code>this * d</code>.
      */
     public Point3D multiplication(final double d) {
-        return new Point3D((int)(x * d), (int)(y * d), (int) (z * d));
+        return new Point3D((int) (x * d), (int) (y * d), (int) (z * d));
     }
 
     @Override

@@ -1,16 +1,18 @@
 package softEngine3D.objects;
 
-import java.awt.Color;
+import softEngine3D.objects.polygons.Polygon;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import softEngine3D.matrixes.*;
 /**
  * <p>
- * </p>
+ * A Camera is an object in 3D space which is able to render it's view of the 3D
+ * space around it to a Graphics2D object; contains multiple values to
+ * manipulate the view.</p>
  *
  * @author Dynisious 28/09/2015
- * @versions 0.0.1
+ * @version 1.0.2
  */
 public class Camera {
     public FPoint3D location; //The location of this Object3D in it's container space.
@@ -48,7 +50,7 @@ public class Camera {
         ).multiplication(new FPoint3D(x, y, z)));
     }
     public FPoint3D rotaion; //The rotation on the three different axis.
-    public double renderDistance; //The z distance away at which objects will no
+    public int renderDistance; //The z distance away at which objects will no
     //longer be displayed.
     public boolean wireFrame = false; //Whether the outline of polygons are rendered.
     public boolean fillPolygons = true; //Whether polygons are filled in.
@@ -77,7 +79,7 @@ public class Camera {
      *                       is initialised with.
      */
     public Camera(final FPoint3D location, final FPoint3D rotaion,
-                  final double renderDistance, final int drawOffsetX,
+                  final int renderDistance, final int drawOffsetX,
                   final int drawOffsetY, final double pof) {
         this.location = location;
         this.rotaion = rotaion;
@@ -101,208 +103,90 @@ public class Camera {
      *                             rendered than can be stored in a single
      *                             array.
      */
-    public void render(final Graphics2D g, final Object3D[] objects) {
-        class Polygon { //Contains all the data for a polygon to be rendered.
-            public final FPoint3D[] vertexes; //The vertexes that make up this polygon.
-            private int[] x; //The x coordinates of this Polygon.
-            private int[] y; //The y coordinates of this Polygon.
-            public final double distance; //The distance from the camera of this polygon in 3D space.
-            public final Color colour; //The colour to fill the polygon with when it is renderd.
-
-            /**
-             * <p>
-             * Creates a new Polygon with the passed values.</p>
-             *
-             * @param vertexes The vertexes that make up this polygon.
-             * @param distance The distance from the camera of this polygon.
-             * @param colour   The colour to fill this Polygon.
-             */
-            public Polygon(final FPoint3D[] vertexes, final Color colour,
-                           final double distance) {
-                this.vertexes = vertexes;
-                this.colour = colour;
-                this.distance = distance;
-            }
-
-            /**
-             * @return The array of x coordinates for this Polygon.
-             */
-            public int[] getXs() {
-                if (x == null) {
-                    x = new int[vertexes.length];
-                    Arrays.setAll(x, (final int i) -> {
-                        return (int) vertexes[i].x + drawOffsetX;
-                    });
-                }
-                return x;
-            }
-
-            /**
-             * @return The array of y coordinates for this Polygon.
-             */
-            public int[] getYs() {
-                if (y == null) {
-                    y = new int[vertexes.length];
-                    Arrays.setAll(y, (final int i) -> {
-                        return (int) vertexes[i].y + drawOffsetY;
-                    });
-                }
-                return y;
-            }
-
-        }
-        //<editor-fold defaultstate="collapsed" desc="Create the transformation matrix which can convert points into camera space.">
-        final TransformationMatrix cameraSpace = new TransformationMatrix(
-                new double[]{
-                    1, 0, 0, 0,
-                    0, Math.cos(rotaion.x), -Math.sin(rotaion.x), 0,
-                    0, Math.sin(rotaion.x), Math.cos(rotaion.x), 0,
-                    0, 0, 0, 1
-                }
-        ).multiplication(
-                new double[]{
-                    Math.cos(rotaion.y), 0, Math.sin(rotaion.y), 0,
-                    0, 1, 0, 0,
-                    -Math.sin(rotaion.y), 0, Math.cos(rotaion.y), 0,
-                    0, 0, 0, 1
-                }
-        ).multiplication(
-                new double[]{
-                    Math.cos(rotaion.z), -Math.sin(rotaion.z), 0, 0,
-                    Math.sin(rotaion.z), Math.cos(rotaion.z), 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-                }
-        ).multiplication(
-                new double[]{
-                    1, 0, 0, -location.x,
-                    0, 1, 0, -location.y,
-                    0, 0, 1, -location.z,
-                    0, 0, 0, 1
-                }
-        );//</editor-fold>
-        final ArrayList<Polygon> polygons = new ArrayList<>(); //The polygons which are to be renderd.
-        //<editor-fold defaultstate="collapsed" desc="Transform all vertexes and get all polygons.">
-        Arrays.asList(objects).forEach((Object3D o) -> {
-            o = o.getCopy();
-            //<editor-fold defaultstate="collapsed" desc="The transformation matrix for this Object.">
+    public void render(final Graphics2D g, Object3D[] objects) {
+        /*<editor-fold defaultstate="collapsed" desc="Transform Object3Ds into camera space.">*/ {
             final TransformationMatrix trans = new TransformationMatrix(
                     new double[]{
                         1, 0, 0, 0,
-                        0, Math.cos(o.rotaion.x), -Math.sin(o.rotaion.x), 0,
-                        0, Math.sin(o.rotaion.x), Math.cos(o.rotaion.x), 0,
+                        0, Math.cos(rotaion.x), -Math.sin(rotaion.x), 0,
+                        0, Math.sin(rotaion.x), Math.cos(rotaion.x), 0,
                         0, 0, 0, 1
                     }
             ).multiplication(
                     new double[]{
-                        Math.cos(o.rotaion.y), 0, Math.sin(o.rotaion.y), 0,
+                        Math.cos(rotaion.y), 0, Math.sin(rotaion.y), 0,
                         0, 1, 0, 0,
-                        -Math.sin(o.rotaion.y), 0, Math.cos(o.rotaion.y), 0,
+                        -Math.sin(rotaion.y), 0, Math.cos(rotaion.y), 0,
                         0, 0, 0, 1
                     }
             ).multiplication(
                     new double[]{
-                        Math.cos(o.rotaion.z), -Math.sin(o.rotaion.z), 0, 0,
-                        Math.sin(o.rotaion.z), Math.cos(o.rotaion.z), 0, 0,
+                        Math.cos(rotaion.z), -Math.sin(rotaion.z), 0, 0,
+                        Math.sin(rotaion.z), Math.cos(rotaion.z), 0, 0,
                         0, 0, 1, 0,
                         0, 0, 0, 1
                     }
-            ).setValue(0, 3, o.location.x
-            ).setValue(1, 3, o.location.y
-            ).setValue(2, 3, o.location.z);
-            //</editor-fold>
-
-            final FPoint3D[] vertexes = o.getVertexes();
-            //<editor-fold defaultstate="collapsed" desc="Transform/Filter out all Vertexes.">
-            Arrays.setAll(vertexes, (final int v) -> {
-                FPoint3D vertex = cameraSpace.multiplication(
-                        trans.multiplication(vertexes[v]));
-                if (vertex.z > 0) { //It's infront of the camera.
-                    if (Math.hypot(Math.hypot(vertex.x, vertex.y), vertex.z) > renderDistance) { //It's outside of render distance.
-                        vertex = null;
+            ).multiplication(
+                    new double[]{
+                        1, 0, 0, -location.x,
+                        0, 1, 0, -location.y,
+                        0, 0, 1, -location.z,
+                        0, 0, 0, 1
                     }
-                } else { //It's behind the camera.
-                    vertex = null;
-                }
-                return vertex;
+            );
+            Arrays.setAll(objects, (final int i) -> {
+                final Object3D o = objects[i].getCopy();
+                o.location = trans.multiplication(o.location);
+                return o;
             });
-            //</editor-fold>
-
-            final Color[] colouring = o.getColouring();
-            final int[][] polys = o.getPolygons();
-            //<editor-fold defaultstate="collapsed" desc="Get all polygons from this Object3D.">
-            for (int p = 0; p < polys.length; p++) {
-                final int[] polygon = polys[p];
-                boolean valid = true; //Switched to false if the polygon is invalid.
-                final FPoint3D[] vtx = new FPoint3D[polygon.length];
-                FPoint3D centeriod = new FPoint3D(0, 0, 0);
-                final double distance;
-                for (int i = 0; i < polygon.length; i++) { //Check all the vertexes that this polygon references.
-                    final FPoint3D v = vertexes[polygon[i]];
-                    if (v == null) { //Null means the vertex was considered invalid.
-                        valid = false;
-                        break;
-                    } else {
-                        vtx[i] = v; //Get store this vertex for the polygon.
-                        centeriod = centeriod.addition(v.x, v.y, v.z);
+        }//</editor-fold>
+        final Polygon[] polygons;
+        /*<editor-fold defaultstate="collapsed" desc="Get all polygons relative to the Camera and in descending z order.">*/ {
+            final ArrayList<Polygon> polys = new ArrayList<>();
+            for (final Object3D o : objects) {
+                //<editor-fold defaultstate="collapsed" desc="The transformation matrix for this Object3D.">
+                final TransformationMatrix trans = new TransformationMatrix(
+                        new double[]{
+                            1, 0, 0, 0,
+                            0, Math.cos(o.rotaion.x), -Math.sin(o.rotaion.x), 0,
+                            0, Math.sin(o.rotaion.x), Math.cos(o.rotaion.x), 0,
+                            0, 0, 0, 1
+                        }
+                ).multiplication(
+                        new double[]{
+                            Math.cos(o.rotaion.y), 0, Math.sin(o.rotaion.y), 0,
+                            0, 1, 0, 0,
+                            -Math.sin(o.rotaion.y), 0, Math.cos(o.rotaion.y), 0,
+                            0, 0, 0, 1
+                        }
+                ).multiplication(
+                        new double[]{
+                            Math.cos(o.rotaion.z), -Math.sin(o.rotaion.z), 0, 0,
+                            Math.sin(o.rotaion.z), Math.cos(o.rotaion.z), 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1
+                        }
+                ).multiplication(
+                        new double[]{
+                            1, 0, 0, o.location.x,
+                            0, 1, 0, o.location.y,
+                            0, 0, 1, o.location.z,
+                            0, 0, 0, 1
+                        }
+                );//</editor-fold>
+                for (final Polygon p : o.polygons) {
+                    p.transform(trans);
+                    if (p.valid(renderDistance)) {
+                        polys.add(p);
                     }
                 }
-                if (valid) {
-                    centeriod = centeriod.multiplication(1.0 / vtx.length);
-                    distance = Math.hypot(Math.hypot(centeriod.x,
-                            centeriod.y), centeriod.z);
-                    polygons.add(new Polygon(vtx, colouring[p], distance));
-                }
             }
-            //</editor-fold>
-
-            //<editor-fold defaultstate="collapsed" desc="Transform all vertexes to give the perspective of depth when rendered.">
-            for (int i = 0; i < vertexes.length; i++) {
-                final FPoint3D vertex = vertexes[i];
-                if (vertex != null) {
-                    final FPoint3D v = vertex.multiplication(pof / Math.hypot(
-                            Math.hypot(vertex.x, vertex.y), vertex.z));
-                    vertex.x = v.x;
-                    vertex.y = v.y;
-                    vertex.z = v.z;
-                }
-            }
-            //</editor-fold>
-        });//</editor-fold>
-
-        polygons.sort((final Polygon o1, final Polygon o2) -> { //Sort all polygons to be in descending order of distance.
-            if (o1.distance > o2.distance) {
-                return -1;
-            }
-            return 0;
-        });
-
-        //<editor-fold defaultstate="collapsed" desc="Render Polygons.">
-        if (fillPolygons) {
-            polygons.forEach((final Polygon polygon) -> {
-                g.setColor(polygon.colour);
-                g.fillPolygon(polygon.getXs(), polygon.getYs(),
-                        polygon.vertexes.length);
-            });
+            polygons = polys.toArray(new Polygon[polys.size()]);
+            Arrays.sort(polygons);
+        }//</editor-fold>
+        for (final Polygon p : polygons) {
+            p.render(g);
         }
-        if (wireFrame) {
-            g.setColor(Color.BLUE);
-            polygons.forEach((final Polygon polygon) -> {
-                g.drawPolygon(polygon.getXs(), polygon.getYs(),
-                        polygon.vertexes.length);
-            });
-            g.setColor(Color.RED);
-            polygons.forEach((final Polygon polygon) -> {
-                for (int i = 0; i < polygon.vertexes.length; i++) {
-                    g.fillArc(polygon.getXs()[i] - 3, polygon.getYs()[i] - 3, 6,
-                            6, 0, 360);
-                }
-            });
-            polygons.forEach((final Polygon polygon) -> {
-                g.setColor(polygon.colour);
-            });
-        }
-        //</editor-fold>
     }
 
 }

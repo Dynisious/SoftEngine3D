@@ -6,7 +6,7 @@ package softEngine3D.matrixes;
  * doubles. Also facilitates addition and subtraction operations.</p>
  *
  * @author Dynisious 27/09/2015
- * @versions 0.0.1
+ * @version 0.0.2
  */
 public class FPoint3D implements Comparable<FPoint3D> {
     /**
@@ -121,6 +121,13 @@ public class FPoint3D implements Comparable<FPoint3D> {
      */
     public FPoint3D multiplication(final double d) {
         return new FPoint3D(x * d, y * d, z * d);
+    }
+
+    /**
+     * @return A deep copy of this FPoint3D;
+     */
+    public FPoint3D getCopy() {
+        return new FPoint3D(x, y, z);
     }
 
     @Override
