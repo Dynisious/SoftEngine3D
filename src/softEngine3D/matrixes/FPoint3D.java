@@ -27,6 +27,13 @@ public class FPoint3D implements Comparable<FPoint3D> {
 
     /**
      * <p>
+     * Creates a new FPoint3D with zeroed values.</p>
+     */
+    public FPoint3D() {
+    }
+
+    /**
+     * <p>
      * Creates a new FPoint3D with the passed coordinates.</p>
      *
      * @param x The x coordinate of this Point3D.
@@ -130,12 +137,42 @@ public class FPoint3D implements Comparable<FPoint3D> {
         return new FPoint3D(x, y, z);
     }
 
+    /**
+     * @return The magnitude of this FPoint3D.
+     */
+    public double getMagnituid() {
+        return Math.hypot(Math.hypot(x, y), z);
+    }
+
+    /**
+     * @param u The vector.
+     *
+     * @return The dot product of the two vectors.
+     */
+    public double dotProduct(final FPoint3D u) {
+        return (x * u.x) + (y * u.y) + (z * u.z);
+    }
+
+    /**
+     * @param u The vector.
+     *
+     * @return The angle between the two vectors.
+     */
+    public double angleBetween(final FPoint3D u) {
+        return Math.acos(dotProduct(u) / (getMagnituid() * u.getMagnituid()));
+    }
+
     @Override
     public int compareTo(final FPoint3D o) {
         if (z > o.z) {
             return -1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(x:%-1.3f, y:%-1.3f, z:%-1.3f)", x, y, z);
     }
 
 }

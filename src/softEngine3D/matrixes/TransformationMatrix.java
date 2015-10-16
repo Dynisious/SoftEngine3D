@@ -216,4 +216,68 @@ public class TransformationMatrix {
                 + (values[(2 * squareSize) + 2] * p.z) + values[(2 * squareSize) + 3]));
     }
 
+    /**
+     * <p>
+     * Returns the result of an multiplication operation between this
+     * TransformationMatrix and the passed Point3D.</p>
+     * <p>
+     * <b>WARNING!</b> This operation does not alter the values of this
+     * TransformationMatrix.</p>
+     *
+     * @param p The Point3D to multiply with.
+     *
+     * @return The result <code>this * p</code>.
+     */
+    public Point3D multiplication(final Point3D p) {
+        return new Point3D(
+                (int) (((values[0] * p.x) + (values[1] * p.y) + (values[2] * p.z) + values[3])),
+                (int) (((values[squareSize] * p.x) + (values[squareSize + 1] * p.y)
+                + (values[squareSize + 2] * p.z) + values[squareSize + 3])),
+                (int) (((values[2 * squareSize] * p.x) + (values[(2 * squareSize) + 1] * p.y)
+                + (values[(2 * squareSize) + 2] * p.z) + values[(2 * squareSize) + 3])));
+    }
+
+    /**
+     * <p>
+     * Produces a TransformationMatrix which will rotate and translate a point
+     * in space around the origin.</p>
+     *
+     * @param rotation    The rotation around each axis.
+     * @param translation The translation along each axis.
+     *
+     * @return The completed TransformationMatrix.
+     */
+    public static TransformationMatrix produceTransMatrix(
+            final FPoint3D rotation, final FPoint3D translation) {
+        return new TransformationMatrix(
+                new double[]{
+                    1, 0, 0, 0,
+                    0, Math.cos(rotation.x), -Math.sin(rotation.x), 0,
+                    0, Math.sin(rotation.x), Math.cos(rotation.x), 0,
+                    0, 0, 0, 1
+                }
+        ).multiplication(
+                new double[]{
+                    Math.cos(rotation.y), 0, Math.sin(rotation.y), 0,
+                    0, 1, 0, 0,
+                    -Math.sin(rotation.y), 0, Math.cos(rotation.y), 0,
+                    0, 0, 0, 1
+                }
+        ).multiplication(
+                new double[]{
+                    Math.cos(rotation.z), -Math.sin(rotation.z), 0, 0,
+                    Math.sin(rotation.z), Math.cos(rotation.z), 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                }
+        ).multiplication(
+                new double[]{
+                    1, 0, 0, translation.x,
+                    0, 1, 0, translation.y,
+                    0, 0, 1, translation.z,
+                    0, 0, 0, 1
+                }
+        );
+    }
+
 }

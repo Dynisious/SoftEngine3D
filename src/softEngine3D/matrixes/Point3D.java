@@ -27,6 +27,13 @@ public class Point3D implements Comparable<Point3D> {
 
     /**
      * <p>
+     * Creates a new Point3D with zeroed values.</p>
+     */
+    public Point3D() {
+    }
+
+    /**
+     * <p>
      * Creates a new Point3D with the passed coordinates.</p>
      *
      * @param x The x coordinate of this Point3D.
@@ -123,12 +130,42 @@ public class Point3D implements Comparable<Point3D> {
         return new Point3D((int) (x * d), (int) (y * d), (int) (z * d));
     }
 
+    /**
+     * @return The magnitude of this Point3D.
+     */
+    public double getMagnituid() {
+        return Math.hypot(Math.hypot(x, y), z);
+    }
+
+    /**
+     * @param u The vector.
+     *
+     * @return The dot product of the two vectors.
+     */
+    public double dotProduct(final Point3D u) {
+        return (x * (double) u.x) + (y * (double) u.y) + (z * (double) u.z);
+    }
+
+    /**
+     * @param u The vector.
+     *
+     * @return The angle between the two vectors.
+     */
+    public double angleBetween(final Point3D u) {
+        return Math.acos(dotProduct(u) / (getMagnituid() * u.getMagnituid()));
+    }
+
     @Override
     public int compareTo(final Point3D o) {
         if (z > o.z) {
             return -1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "(x:" + x + ", y:" + y + ", z:" + z + ")";
     }
 
 }

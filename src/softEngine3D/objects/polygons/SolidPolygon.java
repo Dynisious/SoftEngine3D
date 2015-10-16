@@ -12,6 +12,7 @@ import softEngine3D.matrixes.TransformationMatrix;
  * @author Dynisious 05/10/2015
  * @version 0.0.1
  */
+@SuppressWarnings("unchecked")
 public class SolidPolygon extends Polygon {
     public Color colour;
 
