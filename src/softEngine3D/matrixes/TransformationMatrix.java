@@ -11,8 +11,8 @@ import java.util.Arrays;
  * @version 0.0.2
  */
 public class TransformationMatrix {
-    private final static int squareSize = 4;
-    public final double[] values = new double[squareSize * squareSize]; //The
+    public final static int sideLength = 4;
+    public final double[] values = new double[sideLength * sideLength]; //The
     //values kept in this TransformationMatrix.
     /**
      * @param row    The row of the value to get.
@@ -22,7 +22,7 @@ public class TransformationMatrix {
      */
     public double getValue(final int row, final int column)
             throws ArrayIndexOutOfBoundsException {
-        return values[(squareSize * row) + column];
+        return values[(sideLength * row) + column];
     }
     /**
      * <p>
@@ -37,7 +37,7 @@ public class TransformationMatrix {
     public TransformationMatrix setValue(final int row, final int column,
                                          final double value)
             throws ArrayIndexOutOfBoundsException {
-        values[(squareSize * row) + column] = value;
+        values[(sideLength * row) + column] = value;
         return this;
     }
 
@@ -149,10 +149,10 @@ public class TransformationMatrix {
     public TransformationMatrix multiplication(final double[] values) throws
             ArrayIndexOutOfBoundsException {
         final double[] temp = new double[this.values.length]; //The combined values.
-        for (int row = 0; row < this.values.length; row += squareSize) {
-            for (int col = 0; col < squareSize; col++) {
-                for (int i = 0; i < squareSize; i++) {
-                    temp[row + col] += this.values[row + i] * values[(squareSize * i) + col];
+        for (int row = 0; row < this.values.length; row += sideLength) {
+            for (int col = 0; col < sideLength; col++) {
+                for (int i = 0; i < sideLength; i++) {
+                    temp[row + col] += this.values[row + i] * values[(sideLength * i) + col];
                 }
             }
         }
@@ -210,10 +210,10 @@ public class TransformationMatrix {
     public FPoint3D multiplication(final FPoint3D p) {
         return new FPoint3D(
                 ((values[0] * p.x) + (values[1] * p.y) + (values[2] * p.z) + values[3]),
-                ((values[squareSize] * p.x) + (values[squareSize + 1] * p.y)
-                + (values[squareSize + 2] * p.z) + values[squareSize + 3]),
-                ((values[2 * squareSize] * p.x) + (values[(2 * squareSize) + 1] * p.y)
-                + (values[(2 * squareSize) + 2] * p.z) + values[(2 * squareSize) + 3]));
+                ((values[sideLength] * p.x) + (values[sideLength + 1] * p.y)
+                + (values[sideLength + 2] * p.z) + values[sideLength + 3]),
+                ((values[2 * sideLength] * p.x) + (values[(2 * sideLength) + 1] * p.y)
+                + (values[(2 * sideLength) + 2] * p.z) + values[(2 * sideLength) + 3]));
     }
 
     /**
@@ -231,16 +231,16 @@ public class TransformationMatrix {
     public Point3D multiplication(final Point3D p) {
         return new Point3D(
                 (int) (((values[0] * p.x) + (values[1] * p.y) + (values[2] * p.z) + values[3])),
-                (int) (((values[squareSize] * p.x) + (values[squareSize + 1] * p.y)
-                + (values[squareSize + 2] * p.z) + values[squareSize + 3])),
-                (int) (((values[2 * squareSize] * p.x) + (values[(2 * squareSize) + 1] * p.y)
-                + (values[(2 * squareSize) + 2] * p.z) + values[(2 * squareSize) + 3])));
+                (int) (((values[sideLength] * p.x) + (values[sideLength + 1] * p.y)
+                + (values[sideLength + 2] * p.z) + values[sideLength + 3])),
+                (int) (((values[2 * sideLength] * p.x) + (values[(2 * sideLength) + 1] * p.y)
+                + (values[(2 * sideLength) + 2] * p.z) + values[(2 * sideLength) + 3])));
     }
 
     /**
      * <p>
      * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around the origin.</p>
+     * in space around and along all three axis relative to the origin.</p>
      *
      * @param rotation    The rotation around each axis.
      * @param translation The translation along each axis.
@@ -251,33 +251,65 @@ public class TransformationMatrix {
             final FPoint3D rotation, final FPoint3D translation) {
         return new TransformationMatrix(
                 new double[]{
-                    1, 0, 0, 0,
-                    0, Math.cos(rotation.x), -Math.sin(rotation.x), 0,
-                    0, Math.sin(rotation.x), Math.cos(rotation.x), 0,
-                    0, 0, 0, 1
-                }
-        ).multiplication(
-                new double[]{
-                    Math.cos(rotation.y), 0, Math.sin(rotation.y), 0,
-                    0, 1, 0, 0,
-                    -Math.sin(rotation.y), 0, Math.cos(rotation.y), 0,
-                    0, 0, 0, 1
-                }
-        ).multiplication(
-                new double[]{
-                    Math.cos(rotation.z), -Math.sin(rotation.z), 0, 0,
-                    Math.sin(rotation.z), Math.cos(rotation.z), 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-                }
-        ).multiplication(
-                new double[]{
-                    1, 0, 0, translation.x,
-                    0, 1, 0, translation.y,
-                    0, 0, 1, translation.z,
+                    /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
+                    Math.cos(rotation.y) * Math.cos(rotation.z),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,2)">*/
+                    Math.cos(rotation.y) * -Math.sin(rotation.z),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,3)">*/
+                    Math.sin(rotation.y),
+                    /*</editor-fold>*/ translation.x,
+                    /*<editor-fold defaultstate="collapsed" desc="Item (2,1)">*/
+                    (-Math.sin(rotation.x) * -Math.sin(rotation.y)
+                    * Math.cos(rotation.z))
+                    + (Math.cos(rotation.x) * Math.sin(rotation.z)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,2)">*/
+                    (-Math.sin(rotation.x) * -Math.sin(rotation.y)
+                    * -Math.sin(rotation.z))
+                    + (Math.cos(rotation.x) * Math.cos(rotation.z)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,3)">*/
+                    (-Math.sin(rotation.x) * Math.cos(rotation.y)),
+                    /*</editor-fold>*/ translation.y,
+                    /*<editor-fold defaultstate="collapsed" desc="Item (3,1)">*/
+                    (Math.cos(rotation.x) * -Math.sin(rotation.y)
+                    * Math.cos(rotation.z))
+                    + (Math.sin(rotation.x) * Math.sin(rotation.z)),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
+                    (Math.cos(rotation.x) * -Math.sin(rotation.y)
+                    * -Math.sin(rotation.z))
+                    + (Math.sin(rotation.x) * Math.cos(rotation.z)),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
+                    Math.cos(rotation.x) * Math.cos(rotation.y),
+                    /*</editor-fold>*/ translation.z,
                     0, 0, 0, 1
                 }
         );
+        /*return new TransformationMatrix(
+         new double[]{
+         1, 0, 0, 0,
+         0, Math.cos(rotation.x), -Math.sin(rotation.x), 0,
+         0, Math.sin(rotation.x), Math.cos(rotation.x), 0,
+         0, 0, 0, 1
+         }
+         ).multiplication(
+         new double[]{
+         Math.cos(rotation.y), 0, Math.sin(rotation.y), 0,
+         0, 1, 0, 0,
+         -Math.sin(rotation.y), 0, Math.cos(rotation.y), 0,
+         0, 0, 0, 1
+         }
+         ).multiplication(
+         new double[]{
+         Math.cos(rotation.z), -Math.sin(rotation.z), 0, 0,
+         Math.sin(rotation.z), Math.cos(rotation.z), 0, 0,
+         0, 0, 1, 0,
+         0, 0, 0, 1
+         }
+         ).multiplication(
+         new double[]{
+         1, 0, 0, translation.x,
+         0, 1, 0, translation.y,
+         0, 0, 1, translation.z,
+         0, 0, 0, 1
+         }
+         );*/
     }
 
 }

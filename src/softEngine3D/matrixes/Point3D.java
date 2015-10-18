@@ -155,6 +155,10 @@ public class Point3D implements Comparable<Point3D> {
         return Math.acos(dotProduct(u) / (getMagnituid() * u.getMagnituid()));
     }
 
+    public Point3D copy() {
+        return new Point3D(x, y, z);
+    }
+
     @Override
     public int compareTo(final Point3D o) {
         if (z > o.z) {

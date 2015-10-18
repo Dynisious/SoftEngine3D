@@ -131,13 +131,6 @@ public class FPoint3D implements Comparable<FPoint3D> {
     }
 
     /**
-     * @return A deep copy of this FPoint3D;
-     */
-    public FPoint3D getCopy() {
-        return new FPoint3D(x, y, z);
-    }
-
-    /**
      * @return The magnitude of this FPoint3D.
      */
     public double getMagnituid() {
@@ -160,6 +153,10 @@ public class FPoint3D implements Comparable<FPoint3D> {
      */
     public double angleBetween(final FPoint3D u) {
         return Math.acos(dotProduct(u) / (getMagnituid() * u.getMagnituid()));
+    }
+
+    public FPoint3D copy() {
+        return new FPoint3D(x, y, z);
     }
 
     @Override
