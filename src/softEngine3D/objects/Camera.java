@@ -2,9 +2,8 @@ package softEngine3D.objects;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import softEngine3D.matrixes.*;
 /**
  * <p>
@@ -53,7 +52,7 @@ public class Camera {
     public FPoint3D rotation; //The rotation on the three different axis.
     public int renderDistance; //The z distance away at which objects will no
     //longer be displayed.
-    public boolean wireFrame = false; //Whether the outline of triangles are rendered.
+    public boolean wireFrame = true; //Whether the outline of triangles are rendered.
     public boolean fillPolygons = true; //Whether triangles are filled in.
     public int drawOffsetX; //The offset from the origin to draw all objects on the x axis.
     public int drawOffsetY; //The offset from the origin to draw all objects on the y axis.
@@ -97,84 +96,74 @@ public class Camera {
      * <p>
      * <b>WARNING!</b> The passed Object3D's will be modified.</p>
      *
-     * @param g       The Graphics object to render the passed Object3D's on
-     * @param objects The Object3D's to render.
+     * @param g           The Graphics object to render the passed Object3D's on
+     * @param xDifference The difference along the x axis that is allowed.
+     * @param yDifference The difference along the y axis that is allowed.
+     * @param objects     The Object3D's to render.
      *
      * @throws ArithmeticException Thrown when there are more triangles to be
      *                             rendered than can be stored in a single
      *                             array.
      */
-    public void render(final Graphics2D g, Object3D[] objects) {
-        final ArrayList<Object3D> transformedObject3Ds = new ArrayList<>(
-                objects.length);
-        for (final Object3D obj : objects) {
-            obj.location = obj.location.subtraction(location); //Gets this
-            //Object3D's location relative to the Camera.
-            if (obj.location.getMagnituid() < renderDistance) { //This Object3D
-                //is within the render distance of the Camera.
-                //<editor-fold defaultstate="collapsed" desc="Transform the Object3D's vertexes to be relative to the Camera.">
-                obj.rotaion = obj.rotaion.subtraction(rotation); //Rotates this Object3D to be relative to the Camera.
-                final TransformationMatrix objTrans = TransformationMatrix
-                        .produceTransMatrix(obj.rotaion, obj.location); //The
-                //TransformationMatrix which can move all of the Object3D's
-                //vertexes to be relative to the Camera.
-                for (final FPoint3D vertex : obj.getVertexes()) { //Transform all vertexes.
-                    int pos = 0; //The current position in the TransformationMatrix.
-                    double x, y, z; //The new x, y and z values.
-                    x = (vertex.x * objTrans.values[pos++])
-                            + (vertex.y * objTrans.values[pos++])
-                            + (vertex.z * objTrans.values[pos++])
-                            + objTrans.values[pos++];
-                    y = (vertex.x * objTrans.values[pos++])
-                            + (vertex.y * objTrans.values[pos++])
-                            + (vertex.z * objTrans.values[pos++])
-                            + objTrans.values[pos++];
-                    z = (vertex.x * objTrans.values[pos++])
-                            + (vertex.y * objTrans.values[pos++])
-                            + (vertex.z * objTrans.values[pos++])
-                            + objTrans.values[pos];
-                    final double perspective = pof / Math
-                            .hypot(Math.hypot(x, y), z); //The scaling of this vertex based on it's distance from the camera.
-                    vertex.x = x * perspective;
-                    vertex.y = y * perspective;
-                    vertex.z = z;
+    public void render(final Graphics2D g, final int xDifference,
+                       final int yDifference, Object3D... objects) {
+        if (objects.length != 0) {
+            final TransformationMatrix camTrans = TransformationMatrix
+                    .produceTransMatrixRotate(rotation.invert());
+            final LinkedList<Object3D> toRender = new LinkedList<>();
+            final LinkedHashSet<FPoint3D> allVertexes = new LinkedHashSet<>();
+            for (Object3D object : objects) {
+                object = object.copy();
+                camTrans.transform(object.location.invTranslate(location));
+                object.rotaion.invTranslate(rotation);
+                if (object.location.getMagnituid() < object.appearanceDistance
+                        && object.location.z > 0) {
+                    toRender.add(object);
+                    final TransformationMatrix objTrans = TransformationMatrix
+                            .produceTransMatrixNoScale(object.rotaion,
+                                    object.location);
+                    for (final FPoint3D point : object.getVertexes()) {
+                        if (allVertexes.contains(point))
+                            continue;
+                        allVertexes.add(point);
+                        objTrans.transform(point);
+                        final double scale = pof / point.z;
+                        TransformationMatrix.produceTransMatrixScale(
+                                new FPoint3D(scale, scale, 1))
+                                .transform(point);
+                    }
                 }
-                //</editor-fold>
-                for (final Triangle triangle : obj.triangles) { /*Regenerate
-                     the center of each triangle.*/
-
-                    triangle.generateCenter();
+            }
+            if (!toRender.isEmpty()) {
+                g.translate(drawOffsetX, drawOffsetY);
+                g.scale(-1, -1);
+                final LinkedList<Triangle> allTriangles = new LinkedList<>();
+                for (final Object3D object : toRender)
+                    allTriangles.addAll(object.getValidTriangles(renderDistance,
+                            xDifference, yDifference));
+                if (wireFrame && !allTriangles.isEmpty()) {
+                    g.setColor(Color.BLUE);
+                    final LinkedHashSet<FPoint3D> vertexes = new LinkedHashSet(
+                            allTriangles.size() * 3);
+                    final int[] x = new int[3];
+                    final int[] y = new int[3];
+                    for (final Triangle triangle : allTriangles) {
+                        vertexes.add(triangle.getP1());
+                        vertexes.add(triangle.getP2());
+                        vertexes.add(triangle.getP3());
+                        x[0] = (int) triangle.getP1().x;
+                        x[1] = (int) triangle.getP2().x;
+                        x[2] = (int) triangle.getP3().x;
+                        y[0] = (int) triangle.getP1().y;
+                        y[1] = (int) triangle.getP2().y;
+                        y[2] = (int) triangle.getP3().y;
+                        g.drawPolygon(x, y, 3);
+                    }
+                    g.setColor(Color.red);
+                    for (final FPoint3D vertex : vertexes)
+                        g.fillArc((int) (vertex.x - 2),
+                                (int) (vertex.y - 2), 5, 5, 0, 360);
                 }
-                transformedObject3Ds.add(obj);
-            }
-        }
-        objects = transformedObject3Ds.toArray(
-                new Object3D[transformedObject3Ds.size()]);
-        Arrays.sort(objects);
-        final ArrayList<Triangle> triangles = new ArrayList<>(objects.length);
-        for (final Object3D object3D : objects) {
-            triangles.addAll(Arrays.asList(object3D.getValidTriangles(
-                    renderDistance))); //Adds the triangles to the ArrayList.
-        }
-        triangles.sort(triangles.get(0)); //Sort the triangles into descending order.
-        g.translate(drawOffsetX, drawOffsetY);
-        if (wireFrame) {
-            final LinkedHashSet<FPoint3D> vertexes = new LinkedHashSet<>(
-                    triangles.size());
-            g.setColor(Color.BLUE);
-            for (final Triangle triangle : triangles) {
-                int[] x = new int[]{(int) triangle.getP1().x, (int) triangle
-                    .getP2().x, (int) triangle.getP3().x};
-                int[] y = new int[]{(int) triangle.getP1().y, (int) triangle
-                    .getP2().y, (int) triangle.getP3().y};
-                vertexes.add(triangle.getP1());
-                vertexes.add(triangle.getP2());
-                vertexes.add(triangle.getP3());
-                g.drawPolyline(x, y, 3);
-            }
-            g.setColor(Color.red);
-            for (final FPoint3D vertex : vertexes) {
-                g.fillArc((int) vertex.x - 3, (int) vertex.y - 3, 6, 6, 0, 360);
             }
         }
     }

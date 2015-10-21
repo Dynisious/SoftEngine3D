@@ -1,6 +1,5 @@
 package softEngine3D.objects;
 
-import java.util.Comparator;
 import softEngine3D.matrixes.FPoint3D;
 /**
  * <p>
@@ -9,7 +8,7 @@ import softEngine3D.matrixes.FPoint3D;
  * @author Dynisious 18/10/2015
  * @version 0.0.1
  */
-public final class Triangle implements Comparator<Triangle> {
+public final class Triangle implements Comparable<Triangle> {
     private FPoint3D p1;
     public void setP1(FPoint3D p1) {
         this.p1 = p1;
@@ -71,8 +70,8 @@ public final class Triangle implements Comparator<Triangle> {
     }
 
     @Override
-    public int compare(final Triangle o1, final Triangle o2) {
-        return o1.getCenter().z > o2.getCenter().z ? -1 : 0;
+    public int compareTo(final Triangle o) {
+        return getCenter().z > o.getCenter().z ? -1 : 0;
     }
 
 }

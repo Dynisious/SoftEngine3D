@@ -2,6 +2,9 @@ package softEngine3D.objects;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import softEngine3D.matrixes.FPoint3D;
 /**
  * <p>
@@ -15,6 +18,7 @@ public class Object3D implements Comparable<Object3D> {
     public FPoint3D location; //The location of this Object3D in it's container space.
     public FPoint3D rotaion; //The rotation on the three different axis.
     public Triangle[] triangles; //The array of Polygons.
+    public int appearanceDistance; //The distance at which this Object3D is able to be rendered.
 
     /**
      * <p>
@@ -22,17 +26,28 @@ public class Object3D implements Comparable<Object3D> {
      * in Triangles will be ensured to be of the same reference to decrease the
      * processing needed during rendering.</p>
      *
-     * @param location  The location of this Object3D in it's container space.
-     * @param rotation  The rotation of this Object3D in it's container space.
-     * @param triangles The triangles making up this Object3D.
+     * @param location           The location of this Object3D in it's container
+     *                           space.
+     * @param rotation           The rotation of this Object3D in it's container
+     *                           space.
+     * @param triangles          The triangles making up this Object3D.
+     * @param appearanceDistance The maximum distance this Object3D can be from
+     *                           the camera to render.
      */
     public Object3D(final FPoint3D location, final FPoint3D rotation,
-                    final Triangle[] triangles) {
+                    final Triangle[] triangles, final int appearanceDistance) {
         this.location = location;
         this.rotaion = rotation;
-        final ArrayList<FPoint3D> usedVertexes = new ArrayList<>(
-                triangles.length);
-        for (final Triangle triangle : triangles) {
+        this.appearanceDistance = appearanceDistance;
+        final LinkedList<Triangle> usedTriangles = new LinkedList<>();
+        for (final Triangle triangle : triangles)
+            if (!usedTriangles.contains(triangle))
+                usedTriangles.add(triangle);
+        this.triangles = usedTriangles.toArray(
+                new Triangle[usedTriangles.size()]);
+
+        final LinkedList<FPoint3D> usedVertexes = new LinkedList<>();
+        for (final Triangle triangle : this.triangles) {
             int index;
             if ((index = usedVertexes.indexOf(triangle.getP1())) == -1) {
                 usedVertexes.add(triangle.getP1());
@@ -50,7 +65,6 @@ public class Object3D implements Comparable<Object3D> {
                 triangle.setP3(usedVertexes.get(index));
             }
         }
-        this.triangles = triangles;
     }
 
     /**
@@ -100,7 +114,8 @@ public class Object3D implements Comparable<Object3D> {
             }
             nTriangles[i] = new Triangle(p1, p2, p3, triangles[i].isInverted());
         }
-        return (T) new Object3D(nLocation, nRotaion, nTriangles);
+        return (T) new Object3D(nLocation, nRotaion, nTriangles,
+                appearanceDistance);
     }
 
     /**
@@ -123,7 +138,7 @@ public class Object3D implements Comparable<Object3D> {
      * @return References to all the vertexes which make up this Object3D with
      *         no duplicates.
      */
-    public FPoint3D[] getVertexes() {
+    public Set<FPoint3D> getVertexes() {
         final LinkedHashSet<FPoint3D> vertexes = new LinkedHashSet<>(
                 triangles.length, 1);
         for (final Triangle triangle : triangles) {
@@ -131,36 +146,61 @@ public class Object3D implements Comparable<Object3D> {
             vertexes.add(triangle.getP2());
             vertexes.add(triangle.getP3());
         }
-        return vertexes.toArray(new FPoint3D[vertexes.size()]);
+        return vertexes;
     }
 
+    private static final double QUARTER_TURN = Math.PI / 2;
     /**
      * <p>
      * Returns references to all valid Triangles that make up this Object3D.
      * <br/>Triangles are considered valid if their centers have a positive z
-     * value, are within the render distance and they show their face to the
-     * origin.</p>
+     * value, are within the render distance and they show their face towards
+     * the origin (or away if inverted).</p>
      *
      * @param renderDistance The maximum distance a Triangle can be from the
      *                       origin.
+     * @param xDifference
+     * @param yDifference
      *
      * @return References to all valid Triangles.
      */
-    public Triangle[] getValidTriangles(final double renderDistance) {
-        FPoint3D origin = new FPoint3D(-location.x, -location.y, -location.z);/*
-         The vector from the location of the Object3D to the origin.*/
-
-        final ArrayList<Triangle> validTriangles = new ArrayList<>(
-                triangles.length);
-        final double quarterTurn = Math.PI / 2;
+    public List<Triangle> getValidTriangles(final double renderDistance,
+                                            final int xDifference,
+                                            final int yDifference) {
+        final LinkedList<Triangle> validTriangles = new LinkedList<>();
         for (final Triangle triangle : triangles) {
-            if (triangle.getCenter().z > 0)
-                if (triangle.getCenter().getMagnituid() < renderDistance)
-                    if (triangle.getCenter().angleBetween(origin) < quarterTurn
-                            != triangle.isInverted())
-                        validTriangles.add(triangle);
+            triangle.generateCenter();
+            if (triangle.getCenter().z > 0) //It's in front of the camera.
+                if (triangle.getCenter().getMagnituid() < renderDistance) //It's
+                    //within render distance.
+                    if (Math.abs(triangle.getP1().x) < xDifference
+                            && Math.abs(triangle.getP1().y) < yDifference
+                            && Math.abs(triangle.getP2().x) < xDifference
+                            && Math.abs(triangle.getP2().y) < yDifference
+                            && Math.abs(triangle.getP3().x) < xDifference
+                            && Math.abs(triangle.getP3().y) < yDifference) { //The image is within the bounds.
+                        FPoint3D crossProduct = triangle.getP1().subtraction(
+                                triangle.getCenter()).crossProduct(
+                                        triangle.getP2()
+                                        .subtraction(triangle.getCenter()));
+                        final FPoint3D invCrossProduct = crossProduct.invert();
+                        crossProduct = crossProduct.addition(triangle
+                                .getCenter())
+                                .subtraction(location).getMagnituid()
+                                > invCrossProduct.addition(triangle.getCenter())
+                                .subtraction(location).getMagnituid()
+                                        ? crossProduct
+                                        .addition(triangle.getCenter())
+                                        : invCrossProduct
+                                        .addition(triangle.getCenter()); //The cross
+                        //product needs to point away from the center of the Object3D.
+                        if (crossProduct.angleBetween(triangle.getCenter())
+                                < QUARTER_TURN != triangle.isInverted()) //It's either showing it's
+                            //face to the camera or it's inverted.
+                            validTriangles.add(triangle);
+                    }
         }
-        return validTriangles.toArray(new Triangle[validTriangles.size()]);
+        return validTriangles;
     }
 
 }
