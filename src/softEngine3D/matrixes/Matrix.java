@@ -10,10 +10,10 @@ import java.util.Arrays;
  * @author Dynisious 27/09/2015
  * @version 0.0.2
  */
-public class TransformationMatrix {
+public class Matrix {
     public final static int sideLength = 4;
     public final double[] values = new double[sideLength * sideLength]; //The
-    //values kept in this TransformationMatrix.
+    //values kept in this Matrix.
     /**
      * @param row    The row of the value to get.
      * @param column The column of the value to get.
@@ -32,9 +32,9 @@ public class TransformationMatrix {
      * @param column The column of the value to get.
      * @param value  The value to set in the Matrix.
      *
-     * @return This TransformationMatrix.
+     * @return This Matrix.
      */
-    public TransformationMatrix setValue(final int row, final int column,
+    public Matrix setValue(final int row, final int column,
                                          final double value)
             throws ArrayIndexOutOfBoundsException {
         values[(sideLength * row) + column] = value;
@@ -50,103 +50,103 @@ public class TransformationMatrix {
      *
      * @param values The values to initialise the FMatrix3D with.
      */
-    public TransformationMatrix(double[] values) throws
+    public Matrix(double[] values) throws
             ArrayIndexOutOfBoundsException {
         System.arraycopy(values, 0, this.values, 0, this.values.length);
     }
 
     /**
      * <p>
-     * Returns the result of an addition operation between this
-     * TransformationMatrix and
-     * the passed values.</p>
+ Returns the result of an addition operation between this
+ Matrix and
+ the passed values.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param values The values to add.
      *
      * @return The result of an addition operation between this
-     *         TransformationMatrix and
-     *         the passed values.
+         Matrix and
+         the passed values.
      */
-    public TransformationMatrix addition(final double[] values) throws
+    public Matrix addition(final double[] values) throws
             ArrayIndexOutOfBoundsException {
         final double[] temp = new double[this.values.length]; //The combined values.
         Arrays.setAll(temp, (final int i) -> {
             return this.values[i] + values[i];
         });
-        return new TransformationMatrix(temp);
+        return new Matrix(temp);
     }
 
     /**
      * <p>
-     * Returns the result of performing an addition operation between this
-     * TransformationMatrix and the passed TransformationMatrix.</p>
+ Returns the result of performing an addition operation between this
+ Matrix and the passed Matrix.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
-     * @param m The TransformationMatrix to add to this TransformationMatrix.
+     * @param m The Matrix to add to this Matrix.
      *
      * @return The result of <code>this + p</code>.
      */
-    public TransformationMatrix addition(final TransformationMatrix m) {
-        return new TransformationMatrix(this.values).addition(m.values);
+    public Matrix addition(final Matrix m) {
+        return new Matrix(this.values).addition(m.values);
     }
 
     /**
      * <p>
-     * Returns the result of an subtraction operation between this
-     * TransformationMatrix and the passed values.</p>
+ Returns the result of an subtraction operation between this
+ Matrix and the passed values.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param values The values to add.
      *
      * @return The result of an subtraction operation between this
-     *         TransformationMatrix and
-     *         the passed values.
+         Matrix and
+         the passed values.
      */
-    public TransformationMatrix subtraction(final double[] values) throws
+    public Matrix subtraction(final double[] values) throws
             ArrayIndexOutOfBoundsException {
         final double[] temp = new double[this.values.length]; //The combined values.
         Arrays.setAll(temp, (final int i) -> {
             return this.values[i] - values[i];
         });
-        return new TransformationMatrix(temp);
+        return new Matrix(temp);
     }
 
     /**
      * <p>
-     * Returns the result of an subtraction operation between this
-     * TransformationMatrix and the passed Matrix3D.</p>
+ Returns the result of an subtraction operation between this
+ Matrix and the passed Matrix3D.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param m The Matrix3D to add.
      *
      * @return The result <code>this - m</code>.
      */
-    public TransformationMatrix subtraction(final TransformationMatrix m) {
-        return new TransformationMatrix(this.values).subtraction(m.values);
+    public Matrix subtraction(final Matrix m) {
+        return new Matrix(this.values).subtraction(m.values);
     }
 
     /**
      * <p>
-     * Returns the result of an multiplication operation between this
-     * TransformationMatrix and the passed values.</p>
+ Returns the result of an multiplication operation between this
+ Matrix and the passed values.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param values The values to multiply with.
      *
      * @return The result <code>this * values</code>.
      */
-    public TransformationMatrix multiplication(final double[] values) throws
+    public Matrix multiplication(final double[] values) throws
             ArrayIndexOutOfBoundsException {
         final double[] temp = new double[this.values.length]; //The combined values.
         for (int row = 0; row < this.values.length; row += sideLength) {
@@ -156,52 +156,52 @@ public class TransformationMatrix {
                 }
             }
         }
-        return new TransformationMatrix(temp);
+        return new Matrix(temp);
     }
 
     /**
      * <p>
-     * Returns the result of an multiplication operation between this
-     * TransformationMatrix and the passed TransformationMatrix.</p>
+ Returns the result of an multiplication operation between this
+ Matrix and the passed Matrix.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
-     * @param m The TransformationMatrix to multiply with.
+     * @param m The Matrix to multiply with.
      *
      * @return The result <code>this * m</code>.
      */
-    public TransformationMatrix multiplication(final TransformationMatrix m) {
-        return new TransformationMatrix(this.values).multiplication(m.values);
+    public Matrix multiplication(final Matrix m) {
+        return new Matrix(this.values).multiplication(m.values);
     }
 
     /**
      * <p>
-     * Returns the result of an multiplication operation between this
-     * TransformationMatrix and the passed scalar.</p>
+ Returns the result of an multiplication operation between this
+ Matrix and the passed scalar.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param d The scalar to multiply by.
      *
      * @return The result <code>this * d</code>.
      */
-    public TransformationMatrix multiplication(final double d) {
+    public Matrix multiplication(final double d) {
         final double[] temp = new double[values.length];
         Arrays.setAll(temp, (final int i) -> {
             return d * values[i];
         });
-        return new TransformationMatrix(temp);
+        return new Matrix(temp);
     }
 
     /**
      * <p>
-     * Returns the result of an multiplication operation between this
-     * TransformationMatrix and the passed FPoint3D.</p>
+ Returns the result of an multiplication operation between this
+ Matrix and the passed FPoint3D.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param p The FPoint3D to multiply with.
      *
@@ -218,11 +218,11 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Returns the result of an multiplication operation between this
-     * TransformationMatrix and the passed Point3D.</p>
+ Returns the result of an multiplication operation between this
+ Matrix and the passed Point3D.</p>
      * <p>
      * <b>WARNING!</b> This operation does not alter the values of this
-     * TransformationMatrix.</p>
+ Matrix.</p>
      *
      * @param p The Point3D to multiply with.
      *
@@ -257,46 +257,44 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around and along all three axis relative to the origin.</p>
+ Produces a Matrix which will rotate and translate a point
+ in space around and along all three axis relative to the origin.</p>
      *
      * @param rotation    The rotation around each axis.
      * @param translation The translation along each axis.
      * @param scale       The scale factor along each axis.
      *
-     * @return The completed TransformationMatrix.
+     * @return The completed Matrix.
      */
-    public static TransformationMatrix produceTransMatrix(
+    public static Matrix produceTransMatrix(
             final FPoint3D rotation, final FPoint3D translation,
             final FPoint3D scale) {
-        return new TransformationMatrix(
+        final double cosY = Math.cos(rotation.y);
+        final double cosZ = Math.cos(rotation.z);
+        final double sinZ = Math.sin(rotation.z);
+        final double sinY = Math.sin(rotation.y);
+        final double sinX = Math.sin(rotation.x);
+        final double cosX = Math.cos(rotation.x);
+        return new Matrix(
                 new double[]{
                     /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
-                    scale.x * Math.cos(rotation.y) * Math.cos(rotation.z),
+                    scale.x * cosY * cosZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,2)">*/
-                    scale.x * Math.cos(rotation.y) * -Math.sin(rotation.z),
+                    scale.x * cosY * -sinZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,3)">*/
-                    scale.x * Math.sin(rotation.y),
+                    scale.x * sinY,
                     /*</editor-fold>*/ translation.x,
                     /*<editor-fold defaultstate="collapsed" desc="Item (2,1)">*/
-                    scale.y * ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.cos(rotation.x) * Math.sin(rotation.z))),
+                    scale.y * ((-sinX * -sinY * cosZ) + (cosX * sinZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,2)">*/
-                    scale.y * ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.cos(rotation.x) * Math.cos(rotation.z))),
+                    scale.y * ((-sinX * -sinY * -sinZ) + (cosX * cosZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,3)">*/
-                    scale.y * (-Math.sin(rotation.x) * Math.cos(rotation.y)),
+                    scale.y * (-sinX * cosY),
                     /*</editor-fold>*/ translation.y,
                     /*<editor-fold defaultstate="collapsed" desc="Item (3,1)">*/
-                    scale.z * ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.sin(rotation.x) * Math.sin(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
-                    scale.z * ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.sin(rotation.x) * Math.cos(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
-                    scale.z * Math.cos(rotation.x) * Math.cos(rotation.y),
+                    scale.z * ((cosX * -sinY * cosZ) + (sinX * sinZ)),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
+                    scale.z * ((cosX * -sinY * -sinZ) + (sinX * cosZ)),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
+                    scale.z * cosX * cosY,
                     /*</editor-fold>*/ translation.z,
                     0, 0, 0, 1
                 }
@@ -305,17 +303,17 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around and along all three axis relative to the origin.</p>
+ Produces a Matrix which will rotate and translate a point
+ in space around and along all three axis relative to the origin.</p>
      *
      * @param translation The translation along each axis.
      * @param scale       The scale factor along each axis.
      *
-     * @return The completed TransformationMatrix.
+     * @return The completed Matrix.
      */
-    public static TransformationMatrix produceTransMatrixNoRotation(
+    public static Matrix produceTransMatrixNoRotation(
             final FPoint3D translation, final FPoint3D scale) {
-        return new TransformationMatrix(
+        return new Matrix(
                 new double[]{
                     scale.x, 0, 0, translation.x,
                     0, scale.y, 0, translation.y,
@@ -327,16 +325,16 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around and along all three axis relative to the origin.</p>
+ Produces a Matrix which will rotate and translate a point
+ in space around and along all three axis relative to the origin.</p>
      *
      * @param scale The scale factor along each axis.
      *
-     * @return The completed TransformationMatrix.
+     * @return The completed Matrix.
      */
-    public static TransformationMatrix produceTransMatrixScale(
+    public static Matrix produceTransMatrixScale(
             final FPoint3D scale) {
-        return new TransformationMatrix(
+        return new Matrix(
                 new double[]{
                     scale.x, 0, 0, 0,
                     0, scale.y, 0, 0,
@@ -348,43 +346,44 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around and along all three axis relative to the origin.</p>
+ Produces a Matrix which will rotate and translate a point
+ in space around and along all three axis relative to the origin.</p>
      *
      * @param rotation The rotation around each axis.
      * @param scale    The scale factor along each axis.
      *
-     * @return The completed TransformationMatrix.
+     * @return The completed Matrix.
      */
-    public static TransformationMatrix produceTransMatrixNoTranslation(
+    public static Matrix produceTransMatrixNoTranslation(
             final FPoint3D rotation, final FPoint3D scale) {
-        return new TransformationMatrix(
+        final double cosY = Math.cos(rotation.y);
+        final double cosZ = Math.cos(rotation.z);
+        final double sinZ = Math.sin(rotation.z);
+        final double sinY = Math.sin(rotation.y);
+        final double sinX = Math.sin(rotation.x);
+        final double cosX = Math.cos(rotation.x);
+        return new Matrix(
                 new double[]{
                     /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
-                    scale.x * Math.cos(rotation.y) * Math.cos(rotation.z),
+                    scale.x * cosY * cosZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,2)">*/
-                    scale.x * Math.cos(rotation.y) * -Math.sin(rotation.z),
+                    scale.x * cosY * -sinZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,3)">*/
-                    scale.x * Math.sin(rotation.y), 0,
+                    scale.x * sinY,
+                    /*</editor-fold>*/ 0,
                     /*<editor-fold defaultstate="collapsed" desc="Item (2,1)">*/
-                    scale.y * ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.cos(rotation.x) * Math.sin(rotation.z))),
+                    scale.y * ((-sinX * -sinZ * cosZ) + (cosX * sinZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,2)">*/
-                    scale.y * ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.cos(rotation.x) * Math.cos(rotation.z))),
+                    scale.y * ((-sinX * -sinZ * -sinZ) + (cosX * cosZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,3)">*/
-                    scale.y * (-Math.sin(rotation.x) * Math.cos(rotation.y)),
+                    scale.y * (-sinX * cosY),
                     /*</editor-fold>*/ 0,
                     /*<editor-fold defaultstate="collapsed" desc="Item (3,1)">*/
-                    scale.z * ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.sin(rotation.x) * Math.sin(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
-                    scale.z * ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.sin(rotation.x) * Math.cos(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
-                    scale.z * Math.cos(rotation.x) * Math.cos(rotation.y),
+                    scale.z * ((cosX * -sinZ * cosZ) + (sinX * sinZ)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
+                    scale.z * ((cosX * -sinZ * -sinZ) + (sinX * cosZ)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
+                    scale.z * cosX * cosY,
                     /*</editor-fold>*/ 0,
                     0, 0, 0, 1
                 }
@@ -393,44 +392,46 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around and along all three axis relative to the origin.</p>
+ Produces a Matrix which will rotate and translate a point
+ in space around and along all three axis relative to the origin.</p>
      *
      * @param rotation    The rotation around each axis.
      * @param translation The translation along each axis.
      *
-     * @return The completed TransformationMatrix.
+     * @return The completed Matrix.
      */
-    public static TransformationMatrix produceTransMatrixNoScale(
+    public static Matrix produceTransMatrixNoScale(
             final FPoint3D rotation, final FPoint3D translation) {
-        return new TransformationMatrix(
+        final double cosY = Math.cos(rotation.y);
+        final double cosZ = Math.cos(rotation.z);
+        final double sinZ = Math.sin(rotation.z);
+        final double sinY = Math.sin(rotation.y);
+        final double sinX = Math.sin(rotation.x);
+        final double cosX = Math.cos(rotation.x);
+        return new Matrix(
                 new double[]{
                     /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
-                    Math.cos(rotation.y) * Math.cos(rotation.z),
+                    /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
+                    /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
+                    /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
+                    cosY * cosZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,2)">*/
-                    Math.cos(rotation.y) * -Math.sin(rotation.z),
-                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,3)">*/
-                    Math.sin(rotation.y),
+                    cosY * -sinZ,/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,3)">*/
+                    sinY,
                     /*</editor-fold>*/ translation.x,
                     /*<editor-fold defaultstate="collapsed" desc="Item (2,1)">*/
-                    ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.cos(rotation.x) * Math.sin(rotation.z))),
+                    ((-sinX * -sinY * cosZ) + (cosX * sinZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,2)">*/
-                    ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.cos(rotation.x) * Math.cos(rotation.z))),
+                    ((-sinX * -sinY * -sinZ) + (cosX * cosZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,3)">*/
-                    (-Math.sin(rotation.x) * Math.cos(rotation.y)),
+                    (-sinX * cosY),
                     /*</editor-fold>*/ translation.y,
                     /*<editor-fold defaultstate="collapsed" desc="Item (3,1)">*/
-                    ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.sin(rotation.x) * Math.sin(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
-                    ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.sin(rotation.x) * Math.cos(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
-                    Math.cos(rotation.x) * Math.cos(rotation.y),
+                    ((cosX * -sinY * cosZ) + (sinX * sinZ)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
+                    ((cosX * -sinY * -sinZ) + (sinX * cosZ)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
+                    cosX * cosY,
                     /*</editor-fold>*/ translation.z,
                     0, 0, 0, 1
                 }
@@ -439,47 +440,66 @@ public class TransformationMatrix {
 
     /**
      * <p>
-     * Produces a TransformationMatrix which will rotate and translate a point
-     * in space around and along all three axis relative to the origin.</p>
+ Produces a Matrix which will rotate and translate a point
+ in space around and along all three axis relative to the origin.</p>
      *
      * @param rotation The rotation around each axis.
      *
-     * @return The completed TransformationMatrix.
+     * @return The completed Matrix.
      */
-    public static TransformationMatrix produceTransMatrixRotate(
+    public static Matrix produceTransMatrixRotate(
             final FPoint3D rotation) {
-        return new TransformationMatrix(
+        final double cosY = Math.cos(rotation.y);
+        final double cosZ = Math.cos(rotation.z);
+        final double sinZ = Math.sin(rotation.z);
+        final double sinY = Math.sin(rotation.y);
+        final double sinX = Math.sin(rotation.x);
+        final double cosX = Math.cos(rotation.x);
+        return new Matrix(
                 new double[]{
                     /*<editor-fold defaultstate="collapsed" desc="Item (1,1)">*/
-                    Math.cos(rotation.y) * Math.cos(rotation.z),
+                    cosY * cosZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,2)">*/
-                    Math.cos(rotation.y) * -Math.sin(rotation.z),
+                    cosY * -sinZ,
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (1,3)">*/
-                    Math.sin(rotation.y),
+                    sinY,
                     /*</editor-fold>*/ 0,
                     /*<editor-fold defaultstate="collapsed" desc="Item (2,1)">*/
-                    ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.cos(rotation.x) * Math.sin(rotation.z))),
+                    ((-sinX * -sinY * cosZ) + (cosX * sinZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,2)">*/
-                    ((-Math.sin(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.cos(rotation.x) * Math.cos(rotation.z))),
+                    ((-sinX * -sinY * -sinZ) + (cosX * cosZ)),
                     /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (2,3)">*/
-                    (-Math.sin(rotation.x) * Math.cos(rotation.y)),
+                    (-sinX * cosY),
                     /*</editor-fold>*/ 0,
                     /*<editor-fold defaultstate="collapsed" desc="Item (3,1)">*/
-                    ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * Math.cos(rotation.z))
-                    + (Math.sin(rotation.x) * Math.sin(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
-                    ((Math.cos(rotation.x) * -Math.sin(rotation.y)
-                    * -Math.sin(rotation.z))
-                    + (Math.sin(rotation.x) * Math.cos(rotation.z))),/*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
-                    Math.cos(rotation.x) * Math.cos(rotation.y),
+                    ((cosX * -sinY * cosZ) + (sinX * sinZ)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,2)">*/
+                    ((cosX * -sinY * -sinZ) + (sinX * cosZ)),
+                    /*</editor-fold>*//*<editor-fold defaultstate="collapsed" desc="Item (3,3)">*/
+                    cosX * cosY,
                     /*</editor-fold>*/ 0,
                     0, 0, 0, 1
                 }
         );
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof Matrix) {
+            final Matrix temp = (Matrix) obj;
+            if (temp.values.equals(values))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 23 * hash + Arrays.hashCode(this.values);
+        return hash;
     }
 
 }

@@ -1,5 +1,6 @@
 package softEngine3D.objects;
 
+import java.util.Objects;
 import softEngine3D.matrixes.FPoint3D;
 /**
  * <p>
@@ -8,70 +9,76 @@ import softEngine3D.matrixes.FPoint3D;
  * @author Dynisious 18/10/2015
  * @version 0.0.1
  */
-public final class Triangle implements Comparable<Triangle> {
-    private FPoint3D p1;
-    public void setP1(FPoint3D p1) {
-        this.p1 = p1;
-        generateCenter();
-    }
-    public FPoint3D getP1() {
-        return p1;
-    }
-    private FPoint3D p2;
-    public void setP2(FPoint3D p2) {
-        this.p2 = p2;
-        generateCenter();
-    }
-    public FPoint3D getP2() {
-        return p2;
-    }
-    private FPoint3D p3;
-    public void setP3(FPoint3D p3) {
-        this.p3 = p3;
-        generateCenter();
-    }
-    public FPoint3D getP3() {
-        return p3;
-    }
-    private FPoint3D center; //The center of the triangle.d
-    public FPoint3D getCenter() {
-        return new FPoint3D(center.x, center.y, center.z);
-    }
+public class Triangle implements Comparable<Triangle> {
+    public FPoint3D p1;
+    public FPoint3D p2;
+    public FPoint3D p3;
+    public FPoint3D center; //The center of the triangle.
     public void generateCenter() {
         this.center = p1.addition(p2).addition(p3).multiplication(1 / 3f);
-    }
-    private final boolean inverted;
-    public boolean isInverted() {
-        return inverted;
     }
 
     /**
      * <p>
      * Creates a new Triangle with the passed values.</p>
      *
-     * @param p1       The first point of the triangle.
-     * @param p2       The second point of the triangle.
-     * @param p3       The third point of the triangle.
-     * @param inverted If the Triangle is inverted then it's face is said to be
-     *                 inwards towards the location value of it's Object3D else
-     *                 it's face is considered to be outwards.
+     * @param p1 The first point of the triangle.
+     * @param p2 The second point of the triangle.
+     * @param p3 The third point of the triangle.
      */
-    public Triangle(final FPoint3D p1, final FPoint3D p2, final FPoint3D p3,
-                    final boolean inverted) {
+    public Triangle(final FPoint3D p1, final FPoint3D p2, final FPoint3D p3) {
         this.p1 = p1;
         this.p2 = p2;
         this.p3 = p3;
         generateCenter();
-        this.inverted = inverted;
     }
 
-    public Triangle copy() {
-        return new Triangle(p1.copy(), p2.copy(), p3.copy(), inverted);
+    /**
+     * @param <T> The return type of the Triangle.
+     *
+     * @return A deep copy of this Triangle.
+     */
+    public <T extends Triangle> T copy() {
+        return (T) new Triangle(p1.copy(), p2.copy(), p3.copy());
+    }
+
+    /**
+     * <p>
+     * The natural ordering for Triangles is from highest center-z value to
+     * lowest.</p>
+     *
+     * @param triangle The Triangle to compare against.
+     *
+     * @return -1 if this Triangle has a higher z value else 0.
+     */
+    @Override
+    public int compareTo(final Triangle triangle) {
+        return center.z > triangle.center.z ? -1 : 0;
     }
 
     @Override
-    public int compareTo(final Triangle o) {
-        return getCenter().z > o.getCenter().z ? -1 : 0;
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof Triangle) {
+            final Triangle temp = (Triangle) obj;
+            if (temp.center.equals(center)
+                    && temp.p1.equals(p1)
+                    && temp.p2.equals(p2)
+                    && temp.p3.equals(p3))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 53 * hash + Objects.hashCode(this.p1);
+        hash = 53 * hash + Objects.hashCode(this.p2);
+        hash = 53 * hash + Objects.hashCode(this.p3);
+        hash = 53 * hash + Objects.hashCode(this.center);
+        return hash;
     }
 
 }

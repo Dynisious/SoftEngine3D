@@ -172,4 +172,26 @@ public class Point3D implements Comparable<Point3D> {
         return "(x:" + x + ", y:" + y + ", z:" + z + ")";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof Point3D) {
+            final Point3D temp = (Point3D) obj;
+            if (temp.x == x
+                    && temp.y == y
+                    && temp.z == z)
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 41 * hash + this.x;
+        hash = 41 * hash + this.y;
+        return hash;
+    }
+
 }

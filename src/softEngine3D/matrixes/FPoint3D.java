@@ -10,6 +10,12 @@ package softEngine3D.matrixes;
  */
 public class FPoint3D implements Comparable<FPoint3D> {
     /**
+     * @return A FPoint3D which is 0 by default.
+     */
+    public static FPoint3D getNullPoint() {
+        return new FPoint3D();
+    }
+    /**
      * <p>
      * The x coordinate of this FPoint3D.</p>
      */
@@ -294,6 +300,32 @@ public class FPoint3D implements Comparable<FPoint3D> {
     @Override
     public String toString() {
         return String.format("(x:%-1.3f, y:%-1.3f, z:%-1.3f)", x, y, z);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj instanceof FPoint3D) {
+            final FPoint3D temp = (FPoint3D) obj;
+            if (temp.x == x
+                    && temp.y == y
+                    && temp.z == z)
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 19 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double
+                .doubleToLongBits(this.x) >>> 32));
+        hash = 19 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double
+                .doubleToLongBits(this.y) >>> 32));
+        hash = 19 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double
+                .doubleToLongBits(this.z) >>> 32));
+        return hash;
     }
 
 }
